@@ -5,8 +5,10 @@ import { CiMoneyCheck1 } from "react-icons/ci";
 import {FcMoneyTransfer} from 'react-icons/fc';
 import {BiMoneyWithdraw} from 'react-icons/bi';
 import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
+import { useSelector, useDispatch } from 'react-redux';
 
 const AccountHome = () =>{
+    const user = useSelector((state)=>state.auth.user)
     return(
         <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
             <HomeBar/>
@@ -25,7 +27,7 @@ const AccountHome = () =>{
                         <h5 className='display-5'> 1238917828</h5>
                         <br/>
                         <br/>
-                        <p>Welcome IAN</p>
+                        <p>Welcome {user.first_name}</p>
                         <p>#simple and transparent</p>
                     </div>
                 </div>

@@ -1,8 +1,10 @@
 import React from 'react'
 import HomeBar from './HomeBar';
 import {Link} from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux';
 
 const Home = () => {
+    const user = useSelector((state)=>state.auth.user)
     return(
         <div style={{textAlign: 'center'}}>
             <HomeBar/>

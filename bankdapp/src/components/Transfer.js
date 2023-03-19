@@ -1,8 +1,27 @@
 import React from 'react'
 import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
+import { useSelector, useDispatch } from 'react-redux'
+import {ethers} from "ethers"
+import { AccountsABI } from './ContractsServices/resources'
+import { TransactionDescription } from 'ethers/lib/utils'
 
 const Transfer = () => {
+    const user = useSelector((state)=>state.auth.user)
+
+    async function transfer(){
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
+        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS;
+        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
+
+        //sign the contract
+        const accountsSigner = provider.getSigner()
+        const accountsContract = accounts.connect(accountsSigner)
+
+        //make the transaction
+        const transferTxn = await accountsContract.send(0, 1, 30, "mathematics100")
+        await transferTxn.wait(1)
+    }
     const onSubmit = () =>{
 
     }

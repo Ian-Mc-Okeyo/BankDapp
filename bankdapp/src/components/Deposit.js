@@ -1,14 +1,45 @@
 import React from 'react'
 import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
+import {ethers} from 'ethers'
+import { AccountsABI } from './ContractsServices/resources'
+import {useState} from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import ReactLoading from 'react-loading'
 
 const Deposit = () => {
-    const onSubmit = () =>{
+    const [isLoading, setIsLoading] = useState(false)
+
+    const user = useSelector((state)=> state.auth.user)
+
+    async function Deposit(){
+        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
+        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS
+        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
+
+        //signer
+        const accountsSigner = provider.getSigner()
+        const accountsContract = accounts.connect(accountsSigner)
+
+        //deposit
+        const depositTransaction = await accountsContract.deposit(1, values.password, values.amount)
+        await depositTransaction.wait(1)
+
+        console.log(depositTransaction)
 
     }
-    const {values, errors, handleBlur, handleChange, handleSubmit} = useFormik({
+    const onSubmit = () =>{
+        setIsLoading(true)
+        Deposit().then((response)=>{
+            console.log(response)
+            setIsLoading(false)
+        }).catch((error)=>{
+            console.error(error)
+            setIsLoading(false)
+        })
+    }
+    const {values, errors, touched, isSubmitting, handleBlur, handleChange, handleSubmit} = useFormik({
         initialValues: {
-            receiver_account_number: '',
             amount: '',
             password: ''
         },
@@ -55,11 +86,11 @@ const Deposit = () => {
                         <br/>
                     <form method="POST" className='row g-3 d-flex align-items-center justify-content-center' style={{textAlign: 'center'}}>
                         <div className='col-md-5'>
-                            <label className='form-control-sm' style={{color:'#e9e7e7', textAlign:'left'}}>Receiver Account Number</label>
+                            <label className='form-control-sm' style={{color:'#e9e7e7', textAlign:'left'}}>Amount</label>
                             <input
-                                type='text'
+                                type='number'
                                 className='form-control custom-inputs'
-                                name='id_number'
+                                name='amount'
                                 value={values.amount}
                                 onChange = {handleChange}
                                 onBlur = {handleBlur}
@@ -67,18 +98,6 @@ const Deposit = () => {
                             <br/>
                         </div>
                         <div className='col-md-5'>
-                            <label className='form-control-sm' style={{color:'#e9e7e7', textAlign:'left'}}>Amount</label>
-                            <input
-                                type='email'
-                                className='form-control custom-inputs'
-                                name='email'
-                                value={values.email}
-                                onChange = {handleChange}
-                                onBlur = {handleBlur}
-                            />
-                            <br/>
-                        </div>
-                        <div className='col-md-10'>
                             <label className='form-control-sm' style={{color:'#e9e7e7', textAlign:'left'}}>Password</label>
                             <input
                                 type='password'
@@ -91,7 +110,9 @@ const Deposit = () => {
                             <br/>
                         </div>
                             <div className="form-group">
-                            <button className="btn btn-outline-info" type="submit">Send</button>
+                            <button className="btn btn-outline-info" type="submit" disabled={isLoading} onClick={handleSubmit}>
+                                {isLoading ? <ReactLoading type="spin" color="white" height={30} width={30} />: "Send"}
+                            </button>
                             </div>
                         </form>
                         
@@ -101,7 +122,6 @@ const Deposit = () => {
             </div>
         </>
     )
-    
 }
 
 export default Deposit;

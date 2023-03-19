@@ -4,20 +4,25 @@ import { useFormik } from 'formik'
 import ReactLoading from 'react-loading'
 import { ethers } from 'ethers'
 import { useState, useEffect } from 'react'
-import { RegisterSchema } from './Schemas'
+import { RegisterSchema } from '../Schemas'
 import { getAccountsContract } from './ContractsServices/services'
 import { AccountsABI } from './ContractsServices/resources'
+import { useDispatch, useSelector } from 'react-redux'
+import { setUser } from '../Slices/auth'
+import {useNavigate} from 'react-router-dom'
 
 
 const Register = () =>{
+    const dispatch = useDispatch()
     const[isLoading, setIsLoading] = useState(false)
+    const navigate = useNavigate()
 
     async function createAccount(){
         //create the contracts instance
         const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
         const address = process.env.REACT_APP_ACCOUNTS_ADDRESS;
         console.log(address)
-        const accounts = new ethers.Contract("0x3Aa5ebB10DC797CAC828524e59A333d0A371443c", AccountsABI, provider)
+        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
 
         //connect to the signer to allow transactions
         const accountsSigner = provider.getSigner()
@@ -41,11 +46,20 @@ const Register = () =>{
     }
 
     const onSubmit = (e) =>{
-        e.preventDefault()
         setIsLoading(true)
         createAccount().then((response)=>{
             console.log(response)
+            const user = {
+                first_name: values.first_name,
+                middle_name: values.middle_name,
+                last_name: values.last_name,
+                phoneNumber: values.phoneNumber,
+                email: values.email,
+                id_number: values.id_number
+            }
+            dispatch(setUser(user));
             setIsLoading(false)
+            navigate("/account-home")
         }).catch((error)=>{
             console.error(error)
             setIsLoading(false)
@@ -80,7 +94,7 @@ const Register = () =>{
             <div className="content-section row d-flex flex-column align-items-center justify-content-center" style={{border: 'none'}}>
                 <div className="content-section content col-md-10">
                     <br/>
-                    <form className='row g-3 d-flex align-items-center justify-content-center' style={{textAlign: 'center'}} onSubmit={handleSubmit}>
+                    <form className='row g-3 d-flex align-items-center justify-content-center' style={{textAlign: 'center'}}>
                         <div className='form-group col-md-3'>
                             <label className='form-control-sm' style={{color:'#e9e7e7', textAlign:'center'}}>First Name</label>
                             <input
@@ -185,8 +199,8 @@ const Register = () =>{
                         </div>
                         <br/>
                         <div className="form-group">
-                        <button className="btn btn-outline-info" type="submit" disabled={isLoading}>
-                            {isLoading ? <ReactLoading type="bars" color="white" height={20} width={20} />: "Register"}
+                        <button className="btn btn-outline-info" type="submit" disabled={isLoading} onClick={handleSubmit}>
+                            {isLoading ? <ReactLoading type="spin" color="white" height={20} width={20} />: "Register"}
                         </button>
                         </div>
                     </form>
