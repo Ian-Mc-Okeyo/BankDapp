@@ -10,26 +10,22 @@ import { setUser } from '../Slices/auth'
 import ReactLoading from 'react-loading'
 import Toast from './Toaster'
 import toast, { Toaster } from 'react-hot-toast';
+import { getAccountsContract } from './ContractsServices/services'
+import AuthenticatedBar from './AuthenticatedBar';
+import Login from './Login'
 
 const Deposit = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
-    if(!isAuthenticated){
-        navigate("/login")
-    }
     const user = useSelector((state)=>state.auth.user)
     const [isLoading, setIsLoading] = useState(false)
 
+    //get the contract
+    const accountsContract = getAccountsContract()
+    console.log(accountsContract)
+
     async function Deposit(){
-        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
-        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS
-        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
-
-        //signer
-        const accountsSigner = provider.getSigner()
-        const accountsContract = accounts.connect(accountsSigner)
-
         //deposit
         const depositTransaction = await accountsContract.deposit(user.account_number, values.password, values.amount)
         await depositTransaction.wait(1)
@@ -65,18 +61,23 @@ const Deposit = () => {
         },
         onSubmit
     })
-
+    if(!isAuthenticated){
+        return(
+            <Login/>
+        )
+    }
+    
     return(
         <>
-            <div style={{textAlign: 'justified',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
-                <HomeBar/>
+            <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
+                <AuthenticatedBar/>
                 <Toast/>
                 <br/>
                 <br/>
                 <br/>
-                <h4 className="display-4" style={{marginLeft: "10px"}}>
+                <h6 className="display-6" style={{marginLeft: "10px"}}>
                     <b style={{color: "white"}}>Deposit</b>
-                </h4>
+                </h6>
 
                 <div className="col d-flex justify-content-center">
                     <div className="card col-11 homeBox p-1 p-md-2 m-md-3 mx-auto">

@@ -8,27 +8,23 @@ import { setUser } from '../Slices/auth'
 import {ethers} from "ethers"
 import { AccountsABI } from './ContractsServices/resources'
 import { TransactionDescription } from 'ethers/lib/utils'
+import { getAccountsContract } from './ContractsServices/services'
 import Toast from './Toaster'
 import toast from 'react-hot-toast'
+import AuthenticatedBar from './AuthenticatedBar';
+import Login from './Login'
 
 const Transfer = () => {
     const navigate = useNavigate()
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
-    if(!isAuthenticated){
-        navigate("/login")
-    }
     const user = useSelector((state)=>state.auth.user)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(false)
 
-    async function transfer(){
-        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
-        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS;
-        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
+    //get the contract
+    const accountsContract = getAccountsContract()
 
-        //sign the contract
-        const accountsSigner = provider.getSigner()
-        const accountsContract = accounts.connect(accountsSigner)
+    async function transfer(){
 
         //make the transaction
         const transferTxn = await accountsContract.send(user.account_number, values.receiver_account_number, values.amount, values.password)
@@ -63,11 +59,17 @@ const Transfer = () => {
         },
         onSubmit
     })
+    
+    if(!isAuthenticated){
+        return(
+            <Login/>
+        )
+    }
 
     return(
         <>
-            <div style={{textAlign: 'justified',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
-                <HomeBar/>
+            <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
+                <AuthenticatedBar/>
                 <Toast/>
                 <br/>
                 <br/>

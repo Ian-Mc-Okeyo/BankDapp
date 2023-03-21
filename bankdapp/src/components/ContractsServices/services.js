@@ -5,16 +5,19 @@ import { ethers } from 'ethers'
 
 
 
-export async function getAccountsContract(){
+export function getAccountsContract(){
+    //connect to the smart contract
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
-    const address = process.env.REACT_APP_ACCOUNTS_ADDRESS;
-    const Accounts = new ethers.Contract(address, AccountsABI, provider);
-    const createAccountTxn = await Accounts.createAccount("mathematics100")
-    createAccountTxn.wait(1)
-    return Accounts
+    const address = process.env.REACT_APP_ACCOUNTS_ADDRESS
+    const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
+
+    //signer
+    const accountsSigner = provider.getSigner()
+    const accountsContract = accounts.connect(accountsSigner)
+    return accountsContract
 }
 
-export async function getLoansContract(){
+export function getLoansContract(){
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
     const address = process.env.REACT_APP_LOANS_ADDRESS;
     const Loans = new ethers.Contract(address, LoansABI, provider);

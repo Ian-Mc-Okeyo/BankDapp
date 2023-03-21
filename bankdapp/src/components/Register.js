@@ -19,17 +19,10 @@ const Register = () =>{
     const[isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
+    //get the contract
+    const accountsContract = getAccountsContract()
+
     async function createAccount(){
-        //create the contracts instance
-        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
-        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS;
-        console.log(address)
-        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
-
-        //connect to the signer to allow transactions
-        const accountsSigner = provider.getSigner()
-        const accountsContract = accounts.connect(accountsSigner)
-
         //interact with the contract
         console.log("Creating account")
         const createAccountTxn = await accountsContract.createAccount(
@@ -99,7 +92,7 @@ const Register = () =>{
             <br/>
             <br/>
             <br/>
-            <h3 style={{color: 'white'}}>Register</h3>
+            <h5 style={{color: 'white'}}>Register</h5>
             <div className="content-section row d-flex flex-column align-items-center justify-content-center" style={{border: 'none'}}>
                 <div className="content-section content col-md-10">
                     <br/>

@@ -7,23 +7,27 @@ import {BiMoneyWithdraw} from 'react-icons/bi';
 import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import AuthenticatedBar from './AuthenticatedBar';
+import Login from './Login';
 
 const AccountHome = () =>{
     const navigate = useNavigate()
     const user = useSelector((state)=>state.auth.user)
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
     if(!isAuthenticated){
-        navigate("/login")
+        return(
+            <Login/>
+        )
     }
     return(
         <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
-            <HomeBar/>
+            <AuthenticatedBar/>
             <br/>
             <br/>
             <br/>
-            <h2 className="display-3" style={{marginLeft: "10px"}}>
+            <h5 className="display-5" style={{marginLeft: "10px"}}>
                 <b style={{color: "white"}}>Home</b>
-            </h2>
+            </h5>
 
             <div class="col d-flex justify-content-center">
                 <div className="card w-75 homeBox p-1 p-md-2 m-md-3 mx-auto">

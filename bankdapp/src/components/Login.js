@@ -6,6 +6,7 @@ import {ethers, BigNumber, utils} from "ethers"
 import { AccountsABI } from './ContractsServices/resources'
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from '../Slices/auth'
+import { getAccountsContract } from './ContractsServices/services'
 import { useNavigate } from 'react-router-dom'
 import Toast from './Toaster'
 import toast, { Toaster } from 'react-hot-toast';
@@ -15,12 +16,9 @@ const Login = () =>{
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
+    const accountsContract = getAccountsContract()
+
     async function login(){
-        const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
-        const address = process.env.REACT_APP_ACCOUNTS_ADDRESS
-        const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
-        const accountsSigner = provider.getSigner()
-        const accountsContract = accounts.connect(accountsSigner)
 
         //login
         const isLoggedIn = await accountsContract.login(values.IDNumber, values.password)
