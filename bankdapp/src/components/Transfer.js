@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react'
 import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
 import ReactLoading from 'react-loading'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from '../Slices/auth'
 import {ethers} from "ethers"
@@ -59,10 +59,10 @@ const Transfer = () => {
         },
         onSubmit
     })
-    
+
     if(!isAuthenticated){
         return(
-            <Login/>
+            <Navigate to='/login' />
         )
     }
 

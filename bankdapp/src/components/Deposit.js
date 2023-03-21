@@ -2,7 +2,7 @@ import React from 'react'
 import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
 import {ethers, BigNumber, utils} from 'ethers'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { AccountsABI } from './ContractsServices/resources'
 import {useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
@@ -63,10 +63,10 @@ const Deposit = () => {
     })
     if(!isAuthenticated){
         return(
-            <Login/>
+            <Navigate to='/login' />
         )
     }
-    
+
     return(
         <>
             <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>

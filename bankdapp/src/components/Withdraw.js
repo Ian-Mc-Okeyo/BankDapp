@@ -3,7 +3,7 @@ import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
 import { useState } from 'react'
 import {ethers} from 'ethers'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../Slices/auth'
 import { AccountsABI } from './ContractsServices/resources'
@@ -61,7 +61,7 @@ const Withdraw = () => {
 
     if(!isAuthenticated){
         return(
-            <Login/>
+            <Navigate to='/login' />
         )
     }
 

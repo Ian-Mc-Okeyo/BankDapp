@@ -6,7 +6,7 @@ import {FcMoneyTransfer} from 'react-icons/fc';
 import {BiMoneyWithdraw} from 'react-icons/bi';
 import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import AuthenticatedBar from './AuthenticatedBar';
 import Login from './Login';
 
@@ -16,7 +16,7 @@ const AccountHome = () =>{
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
     if(!isAuthenticated){
         return(
-            <Login/>
+            <Navigate to='/login' />
         )
     }
     return(
