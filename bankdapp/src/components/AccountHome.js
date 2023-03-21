@@ -6,9 +6,15 @@ import {FcMoneyTransfer} from 'react-icons/fc';
 import {BiMoneyWithdraw} from 'react-icons/bi';
 import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const AccountHome = () =>{
+    const navigate = useNavigate()
     const user = useSelector((state)=>state.auth.user)
+    const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+    if(!isAuthenticated){
+        navigate("/login")
+    }
     return(
         <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
             <HomeBar/>
@@ -24,7 +30,7 @@ const AccountHome = () =>{
                     <div className="card-body" style={{textAlign: 'left', color: 'white'}}>
                         <h5 className="card-title">Account Number</h5>
                         <br/>
-                        <h5 className='display-5'> 1238917828</h5>
+                        <h5 className='display-5'>{user.account_number}</h5>
                         <br/>
                         <br/>
                         <p>Welcome {user.first_name}</p>

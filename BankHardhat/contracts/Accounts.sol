@@ -32,6 +32,9 @@ contract Accounts{
     //mapping to check of email is unique
     mapping(string => bool) email_exists;
 
+    //map id Number to account number
+    mapping(string => uint) id_account;
+
     //authentication modifier
     modifier isAuthenticated(uint256 _account_number, string memory password){
         bytes32 authentication = sha256(abi.encodePacked(
@@ -67,8 +70,47 @@ contract Accounts{
         _;
     }
 
+    //authenticate using IDNumber
+    modifier IDIsAuthenticated(string memory _IDNumber, string memory _password){
+        require(IDNumber_exists[_IDNumber] == true, "ID number does not exist");
+        uint account_number = id_account[_IDNumber];
+        require(accounts_exist[account_number] == true, "Wrong IDNumber");
+        bytes32 authentication = sha256(abi.encodePacked(
+            _password,
+            account_number
+        ));
+
+        require(accounts[account_number].public_key == authentication, "Wrong details");
+        _;
+    }
+
+    // function getAccountNumber(string memory _id_number, string memory _password) public view returns(uint256){//during registration
+    //     require(IDNumber_exists[_id_number] == true, "ID number does not exist");
+    //     uint account_number = id_account[_id_number];
+    //     bytes32 authentication = sha256(abi.encodePacked(
+    //         _password,
+    //         account_number
+    //     ));
+
+    //     require(accounts[account_number].public_key == authentication, "Wrong details");
+    //     return account_number;
+    // }
+
+    function getAccountDetails(string memory _IDNumber, string memory _password) public view IDIsAuthenticated(_IDNumber, _password) returns(
+        uint256, string memory, string memory, string memory, string memory, string memory, string memory, uint256
+    ){
+        uint _account_number = id_account[_IDNumber];
+        require(accounts_exist[_account_number] == true, "Wrong IDNumber");
+        Account memory account = accounts[_account_number];
+        return (account.id, account.firstName, account.middleName, account.lastName, account.phoneNumber, account.email, account.IDNumber, account.balance);
+    }
+
+    function login(string memory _IDNumber, string memory _password) public view IDIsAuthenticated(_IDNumber, _password) returns(bool){
+        return true;
+    }
+
     function createAccount(
-            string memory password, 
+            string memory password,
             string memory _firstName,
             string memory _middleName,
             string memory _lastName,
@@ -98,6 +140,7 @@ contract Accounts{
         IDNumber_exists[_IDNumber] = true;
         phoneNumber_exists[_phoneNumber] = true;
         email_exists[_email] = true;
+        id_account[_IDNumber] = count;
         count = count +1;
     }
 
@@ -105,8 +148,14 @@ contract Accounts{
         return accounts[_account_number].balance;
     }
 
-    function deposit(uint256 _account_number, string memory password, uint256 amount) public isAuthenticated(_account_number, password) accountExists(_account_number) accountExists(_account_number) returns(uint256){
+    function deposit(uint256 _account_number, string memory password, uint256 amount) public isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){
         accounts[_account_number].balance += amount;
+        return accounts[_account_number].balance;
+    }
+
+    function withdraw(uint256 _account_number, string memory password, uint256 amount) public isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){
+        require(accounts[_account_number].balance >= amount, "Insufficient balance");
+        accounts[_account_number].balance -= amount;
         return accounts[_account_number].balance;
     }
 

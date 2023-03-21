@@ -1,16 +1,25 @@
 import React from 'react'
 import { useFormik } from 'formik'
 import HomeBar from './HomeBar'
-import {ethers} from 'ethers'
+import {ethers, BigNumber, utils} from 'ethers'
+import { useNavigate } from 'react-router-dom'
 import { AccountsABI } from './ContractsServices/resources'
 import {useState} from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { setUser } from '../Slices/auth'
 import ReactLoading from 'react-loading'
+import Toast from './Toaster'
+import toast, { Toaster } from 'react-hot-toast';
 
 const Deposit = () => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+    if(!isAuthenticated){
+        navigate("/login")
+    }
+    const user = useSelector((state)=>state.auth.user)
     const [isLoading, setIsLoading] = useState(false)
-
-    const user = useSelector((state)=> state.auth.user)
 
     async function Deposit(){
         const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
@@ -22,8 +31,14 @@ const Deposit = () => {
         const accountsContract = accounts.connect(accountsSigner)
 
         //deposit
-        const depositTransaction = await accountsContract.deposit(1, values.password, values.amount)
+        const depositTransaction = await accountsContract.deposit(user.account_number, values.password, values.amount)
         await depositTransaction.wait(1)
+
+        //update user local balance
+        const hexBalance = await accountsContract.getBalance(user.account_number, values.password)
+        const userNewBalance = hexBalance.toNumber()
+        console.log(userNewBalance)
+        dispatch(setUser({...user, balance: userNewBalance}))
 
         console.log(depositTransaction)
 
@@ -32,9 +47,14 @@ const Deposit = () => {
         setIsLoading(true)
         Deposit().then((response)=>{
             console.log(response)
+            toast.success(`Successfully deposited $${values.amount}`, {
+                position: 'bottom-left',
+                duration: 5000
+            })
             setIsLoading(false)
         }).catch((error)=>{
             console.error(error)
+            toast.error("Error occurred")
             setIsLoading(false)
         })
     }
@@ -50,11 +70,12 @@ const Deposit = () => {
         <>
             <div style={{textAlign: 'justified',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
                 <HomeBar/>
+                <Toast/>
                 <br/>
                 <br/>
                 <br/>
                 <h4 className="display-4" style={{marginLeft: "10px"}}>
-                    <b style={{color: "white"}}>Transfer</b>
+                    <b style={{color: "white"}}>Deposit</b>
                 </h4>
 
                 <div className="col d-flex justify-content-center">
@@ -62,10 +83,10 @@ const Deposit = () => {
                         <div className="card-body" style={{textAlign: 'left', color: 'white'}}>
                             <h5 className="card-title">Account Number</h5>
                             <br/>
-                            <h5 className='display-5'> 1238917828</h5>
+                            <h5 className='display-5'>{user.account_number}</h5>
                             <br/>
                             <br/>
-                            <p>Welcome IAN</p>
+                            <p>Welcome {user.first_name}</p>
                             <i>#simple and Transparent</i>
                             
                         </div>
@@ -75,7 +96,7 @@ const Deposit = () => {
                     <div className="card col-11 p-md-2 m-md-3 balance-section">
                         <div className="" style={{textAlign: 'left', color: 'white'}}>
                             <h5 className="card-title">Your Money:</h5>
-                            <h5 className='display-5'>$123891</h5>
+                            <h5 className='display-5'>${user.balance}</h5>
                         </div>
                     </div>
                 </div>

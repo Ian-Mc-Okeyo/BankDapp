@@ -2,7 +2,7 @@ import React from 'react'
 import HomeBar from './HomeBar'
 import { useFormik } from 'formik'
 import ReactLoading from 'react-loading'
-import { ethers } from 'ethers'
+import { ethers, BigNumber, utils} from 'ethers'
 import { useState, useEffect } from 'react'
 import { RegisterSchema } from '../Schemas'
 import { getAccountsContract } from './ContractsServices/services'
@@ -10,6 +10,8 @@ import { AccountsABI } from './ContractsServices/resources'
 import { useDispatch, useSelector } from 'react-redux'
 import { setUser } from '../Slices/auth'
 import {useNavigate} from 'react-router-dom'
+import Toast from './Toaster'
+import toast, { Toaster } from 'react-hot-toast';
 
 
 const Register = () =>{
@@ -41,7 +43,21 @@ const Register = () =>{
         )
         await createAccountTxn.wait(1)
 
-        console.log(createAccountTxn)
+        const userDetails = await accountsContract.getAccountDetails(values.id_number, values.password)
+        console.log(userDetails)
+        const user = {
+                account_number: userDetails[0].toNumber(),
+                first_name: userDetails[1],
+                middle_name: userDetails[2],
+                last_name: userDetails[3],
+                phoneNumber: userDetails[4],
+                email: userDetails[5],
+                id_number: userDetails[6],
+                balance: userDetails[7].toNumber()
+            }
+        console.log(user)
+        dispatch(setUser(user))
+        console.log(user)
         
     }
 
@@ -49,17 +65,9 @@ const Register = () =>{
         setIsLoading(true)
         createAccount().then((response)=>{
             console.log(response)
-            const user = {
-                first_name: values.first_name,
-                middle_name: values.middle_name,
-                last_name: values.last_name,
-                phoneNumber: values.phoneNumber,
-                email: values.email,
-                id_number: values.id_number
-            }
-            dispatch(setUser(user));
-            setIsLoading(false)
-            navigate("/account-home")
+            toast.success("Successfully registered")
+            //setIsLoading(false)
+            setTimeout(()=> {navigate("/account-home")}, 3000)
         }).catch((error)=>{
             console.error(error)
             setIsLoading(false)
@@ -84,6 +92,7 @@ const Register = () =>{
     return (
         <>
         <HomeBar/>
+        <Toast/>
         <div className='container' style={{textAlign: 'center', backgroundImage: "linear-gradient(#091d3e, #114c6c)"}} >
             <br/>
             <br/>
