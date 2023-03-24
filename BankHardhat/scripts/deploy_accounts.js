@@ -10,10 +10,10 @@ async function main(){
   const createAccountTxn = await accounts.createAccount("maths", "IAN", "MARK", "OKEYO", "0796417598", "ian@gmail.com", "39087227")
   await createAccountTxn.wait(1)
 
-  const depositTxn = await accounts.deposit(0, "maths", 300)
+  const depositTxn = await accounts.deposit(1000000, "maths", 300)
   await depositTxn.wait(1)
 
-  const balance = await accounts.getBalance(0, "maths")
+  const balance = await accounts.getBalance(1000000, "maths")
   console.log(balance)
 
 }

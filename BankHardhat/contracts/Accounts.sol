@@ -12,10 +12,11 @@ contract Accounts{
         string email;
         string IDNumber;
         uint256 balance;
+        uint256 avarageTxs;
         bytes32 public_key;
     }
 
-    uint count = 0;
+    uint count = 1000000;
 
     //maping to store the accounts
     mapping(uint => Account) accounts;
@@ -37,6 +38,7 @@ contract Accounts{
 
     //authentication modifier
     modifier isAuthenticated(uint256 _account_number, string memory password){
+        require(accounts_exist[_account_number] == true, "Wrong details");
         bytes32 authentication = sha256(abi.encodePacked(
             password,
             _account_number
@@ -84,17 +86,19 @@ contract Accounts{
         _;
     }
 
-    // function getAccountNumber(string memory _id_number, string memory _password) public view returns(uint256){//during registration
-    //     require(IDNumber_exists[_id_number] == true, "ID number does not exist");
-    //     uint account_number = id_account[_id_number];
-    //     bytes32 authentication = sha256(abi.encodePacked(
-    //         _password,
-    //         account_number
-    //     ));
+    //for authentication from other contracts
+    function authenticateAccountNumber(uint256 _account_number, string memory _password) public view returns(bool){
+        bytes32 authentication = sha256(abi.encodePacked(
+            _password,
+            _account_number
+        ));
 
-    //     require(accounts[account_number].public_key == authentication, "Wrong details");
-    //     return account_number;
-    // }
+        return accounts[_account_number].public_key == authentication;
+    }
+
+    function checkIfAccountExists(uint256 _account_number) public view returns(bool){
+        return accounts_exist[_account_number];
+    }
 
     function getAccountDetails(string memory _IDNumber, string memory _password) public view IDIsAuthenticated(_IDNumber, _password) returns(
         uint256, string memory, string memory, string memory, string memory, string memory, string memory, uint256
@@ -131,7 +135,8 @@ contract Accounts{
             _phoneNumber, 
             _email, 
             _IDNumber,
-            0, 
+            0,
+            0,
             _public_key
         );
         
@@ -148,22 +153,37 @@ contract Accounts{
         return accounts[_account_number].balance;
     }
 
+    function getAverageTxs(uint256 _account_number) public view returns(uint256){
+        return accounts[_account_number].avarageTxs;
+    }
+
     function deposit(uint256 _account_number, string memory password, uint256 amount) public isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){
         accounts[_account_number].balance += amount;
+        accounts[_account_number].avarageTxs = ((accounts[_account_number].avarageTxs/100 + amount)*100)/2;
         return accounts[_account_number].balance;
     }
 
     function withdraw(uint256 _account_number, string memory password, uint256 amount) public isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){
         require(accounts[_account_number].balance >= amount, "Insufficient balance");
         accounts[_account_number].balance -= amount;
+        accounts[_account_number].avarageTxs = ((accounts[_account_number].avarageTxs/100 + amount)*100)/2;
         return accounts[_account_number].balance;
     }
 
 
     function send(uint sender_account_number, uint receiver_account_number, uint amount, string memory password) public isAuthenticated(sender_account_number, password) accountExists(sender_account_number) accountExists(receiver_account_number) {
         require(accounts[sender_account_number].balance >= amount, "Insufficient funds");
-
+        accounts[sender_account_number].avarageTxs = ((accounts[sender_account_number].avarageTxs/100 + amount)*100)/2;
         accounts[sender_account_number].balance -= amount;
         accounts[receiver_account_number].balance +=amount;
     }
+
+    function addLoanToBalance(uint256 _loanAmount, uint256 _account_number, string memory _password) public isAuthenticated(_account_number, _password){
+        accounts[_account_number].balance += _loanAmount;
+    }
+
+    function deductLoanRepayment(uint256 _repayAmount, uint256 _account_number, string memory _password) public isAuthenticated(_account_number, _password){
+        accounts[_account_number].balance -= _repayAmount;
+    }
+
 }

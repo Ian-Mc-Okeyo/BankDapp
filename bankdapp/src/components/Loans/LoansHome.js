@@ -1,24 +1,49 @@
-import React from 'react'
-import HomeBar from './HomeBar';
+import React, {useEffect} from 'react'
+import HomeBar from '../HomeBar';
 import {Link} from 'react-router-dom'
 import { CiMoneyCheck1 } from "react-icons/ci";
 import {FcMoneyTransfer} from 'react-icons/fc';
 import {BiMoneyWithdraw} from 'react-icons/bi';
-import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Navigate } from 'react-router-dom';
-import AuthenticatedBar from './AuthenticatedBar';
-import Login from './Login';
+import { getLoansContract } from '../ContractsServices/services';
+import AuthenticatedBar from '../AuthenticatedBar';
+import Login from '../Login';
+import {GiPayMoney, GiReceiveMoney} from 'react-icons/gi';
 
-const AccountHome = () =>{
+const LoansHome = () =>{
     const navigate = useNavigate()
     const user = useSelector((state)=>state.auth.user)
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+
+    const loansContract = getLoansContract()
+
+    async function checkLoansAccount(){
+        const loanExists = await loansContract.checkIfLoanAccountExists(user.account_number)
+        if(!loanExists){
+            const loansCreationTxs = await loansContract.createLoanAccount(user.account_number)
+            await loansCreationTxs.wait(1)
+            console.log("Created a loan account")
+        }else{
+            console.log("Loan account exists")
+        }
+    }
+
+    useEffect(()=>{
+        checkLoansAccount().then((res)=>{
+            console.log(res)
+        }).catch((error)=>{
+            console.error(error)
+        })
+    }, [])
+
     if(!isAuthenticated){
         return(
             <Navigate to='/login' />
         )
     }
+
+
     return(
         <div style={{textAlign: 'center',  backgroundImage: 'linear-gradient(#091d3e, #114c6c)'}}>
             <AuthenticatedBar/>
@@ -26,7 +51,7 @@ const AccountHome = () =>{
             <br/>
             <br/>
             <h5 className="display-5" style={{marginLeft: "10px"}}>
-                <b style={{color: "white"}}>Home</b>
+                <b style={{color: "white"}}>Loans</b>
             </h5>
 
             <div class="col d-flex justify-content-center">
@@ -49,42 +74,18 @@ const AccountHome = () =>{
 
                 </div>
                 <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <div class="card homeBox">
-                        <div className="card-body">
-                            <h2 className="card-title menu-icons"><CiMoneyCheck1/></h2>
-                            <p className="card-text">My Account</p>
-                        </div>
-                    </div>
-                </div>
-                <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/transfer' class="card homeBox">
-                        <div className="card-body">
-                            <h2 className="card-title menu-icons"><FcMoneyTransfer/></h2>
-                            <p className="card-text">Transfer</p>
-                        </div>
-                    </Link>
-                </div>
-                <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/withdraw' class="card homeBox">
-                        <div className="card-body">
-                            <h2 className="card-title menu-icons"><BiMoneyWithdraw/></h2>
-                            <p className="card-text">Withdraw</p>
-                        </div>
-                    </Link>
-                </div>
-                <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/deposit' class="card homeBox">
+                    <Link to='/loans-repay' class="card homeBox">
                         <div className="card-body">
                             <h2 className="card-title menu-icons"><GiPayMoney/></h2>
-                            <p className="card-text">Deposit</p>
+                            <p className="card-text">Repay</p>
                         </div>
                     </Link>
                 </div>
                 <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/loans-home' class="card homeBox">
+                    <Link to='/loans-borrow' class="card homeBox">
                         <div className="card-body">
                             <h2 className="card-title menu-icons"><GiReceiveMoney/></h2>
-                            <p className="card-text">Loans</p>
+                            <p className="card-text">Borrow</p>
                         </div>
                     </Link>
                 </div>
@@ -108,4 +109,4 @@ const AccountHome = () =>{
     )
 }
 
-export default AccountHome;
+export default LoansHome;
