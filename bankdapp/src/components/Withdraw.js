@@ -5,6 +5,7 @@ import { useState } from 'react'
 import {ethers} from 'ethers'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
 import { setUser } from '../Slices/auth'
 import { AccountsABI } from './ContractsServices/resources'
 import { getAccountsContract } from './ContractsServices/services'
@@ -20,6 +21,7 @@ const Withdraw = () => {
     const user = useSelector((state)=>state.auth.user)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(false)
+    const baseurl = "http://127.0.0.1:8000/"
 
     //get the contract
     const accountsContract = getAccountsContract()
@@ -27,8 +29,19 @@ const Withdraw = () => {
     async function withdraw(){
 
         //withdraw
-        const withdrawTransaction = await accountsContract.withdraw(user.account_number, values.password, values.amount)
-        await withdrawTransaction.wait(1)
+        const withdrawTxn = await accountsContract.withdraw(user.account_number, values.password, values.amount)
+        await withdrawTxn.wait(1)
+
+        //backup
+        await axios.post(`${baseurl}/accounts/withdraw/`, {
+            account_number: user.account_number,
+            amount: values.amount,
+            withdraw_hash: withdrawTxn.hash
+        }).then((res)=>{
+            console.log(res)
+        }).catch((err)=>{
+            console.error(err)
+        })
 
         //update user local balance
         const hexBalance = await accountsContract.getBalance(user.account_number, values.password)

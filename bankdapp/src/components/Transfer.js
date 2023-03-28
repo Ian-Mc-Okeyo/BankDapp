@@ -4,6 +4,7 @@ import HomeBar from './HomeBar'
 import ReactLoading from 'react-loading'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import axios from 'axios'
 import { setUser } from '../Slices/auth'
 import {ethers} from "ethers"
 import { AccountsABI } from './ContractsServices/resources'
@@ -20,6 +21,8 @@ const Transfer = () => {
     const user = useSelector((state)=>state.auth.user)
     const dispatch = useDispatch()
     const [isLoading, setIsLoading] = useState(false)
+    const baseurl = "http://127.0.0.1:8000/"
+
 
     //get the contract
     const accountsContract = getAccountsContract()
@@ -30,6 +33,18 @@ const Transfer = () => {
         const transferTxn = await accountsContract.send(user.account_number, values.receiver_account_number, values.amount, values.password)
         await transferTxn.wait(1)
 
+        //backup
+        await axios.post(`${baseurl}/accounts/transfer/`, {
+            sender_account_number: user.account_number,
+            receiver_account_number: values.receiver_account_number,
+            amount: values.amount,
+            transfer_hash: transferTxn.hash
+            }).then((res)=>{
+                console.log(res)
+            }).catch((err)=>{
+                console.log(err)
+            })
+        
         //update user local balance
         const hexBalance = await accountsContract.getBalance(user.account_number, values.password)
         const userNewBalance = hexBalance.toNumber()

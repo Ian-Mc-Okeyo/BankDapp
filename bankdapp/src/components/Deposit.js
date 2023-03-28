@@ -5,6 +5,7 @@ import {ethers, BigNumber, utils} from 'ethers'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { AccountsABI } from './ContractsServices/resources'
 import {useState} from 'react'
+import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from '../Slices/auth'
 import ReactLoading from 'react-loading'
@@ -20,15 +21,27 @@ const Deposit = () => {
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
     const user = useSelector((state)=>state.auth.user)
     const [isLoading, setIsLoading] = useState(false)
+    const baseurl = "http://127.0.0.1:8000/"
 
     //get the contract
     const accountsContract = getAccountsContract()
     console.log(accountsContract)
 
     async function deposit(){
-        //deposit
+        //smc deposit
         const depositTransaction = await accountsContract.deposit(user.account_number, values.password, values.amount)
         await depositTransaction.wait(1)
+
+        //backup
+        await axios.post(`${baseurl}/accounts/deposit/`, {
+            account_number: user.account_number,
+            amount: values.amount,
+            deposit_hash: depositTransaction.hash
+        }).then((res)=>{
+            console.log(res)
+        }).catch((err)=>{
+            console.log(err)
+        })
 
         //update user local balance
         const hexBalance = await accountsContract.getBalance(user.account_number, values.password)

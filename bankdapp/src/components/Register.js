@@ -12,12 +12,16 @@ import { setUser } from '../Slices/auth'
 import {useNavigate} from 'react-router-dom'
 import Toast from './Toaster'
 import toast, { Toaster } from 'react-hot-toast';
+import axios from 'axios'
 
 
 const Register = () =>{
     const dispatch = useDispatch()
+    const user = useSelector((state) => state.auth.user)
     const[isLoading, setIsLoading] = useState(false)
+    const[backupUser, setBackupUser] = useState({})
     const navigate = useNavigate()
+    const baseurl = "http://127.0.0.1:8000/"
 
     //get the contract
     const accountsContract = getAccountsContract()
@@ -34,11 +38,12 @@ const Register = () =>{
             values.email,
             values.id_number
         )
+
         await createAccountTxn.wait(1)
 
         const userDetails = await accountsContract.getAccountDetails(values.id_number, values.password)
         console.log(userDetails)
-        const user = {
+        const new_user = {
                 account_number: userDetails[0].toNumber(),
                 first_name: userDetails[1],
                 middle_name: userDetails[2],
@@ -48,10 +53,20 @@ const Register = () =>{
                 id_number: userDetails[6],
                 balance: userDetails[7].toNumber()
             }
-        console.log(user)
-        dispatch(setUser(user))
-        console.log(user)
         
+        await axios.post(`${baseurl}/accounts/register/`, {
+                account_number: new_user.account_number,
+                id_number: new_user.id_number,
+                balance: new_user.balance
+            }).then((res)=>{
+                console.log(res)
+               
+            }).catch((err)=>{
+                console.error(err)
+            })
+        
+            
+        dispatch(setUser(new_user))        
     }
 
     const onSubmit = (e) =>{
@@ -61,6 +76,7 @@ const Register = () =>{
             toast.success("Successfully registered")
             //setIsLoading(false)
             setTimeout(()=> {navigate("/account-home")}, 3000)
+            
         }).catch((error)=>{
             console.error(error)
             setIsLoading(false)
