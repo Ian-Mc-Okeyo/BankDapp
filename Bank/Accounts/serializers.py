@@ -41,8 +41,10 @@ class TransferSerializer(serializers.Serializer):
         receiverAccount = Account.objects.filter(account_number = validated_data['receiver_account_number']).first()
         amount = validated_data['amount']
         senderAccount.balance -= int(amount)
+        senderAccount.average_txn = (senderAccount.average_txn + float(validated_data['amount']))/2
+
         receiverAccount.balance += int(amount)
-        print(receiverAccount.balance)
+        receiverAccount.average_txn = (receiverAccount.average_txn + float(validated_data['amount']))/2
 
         senderTxn = Transaction(account = senderAccount, transaction_id = validated_data['transfer_hash'], transaction_type = 'transfer_send', amount=validated_data['amount'])
         receiverTxn = Transaction(account = receiverAccount, transaction_id = validated_data['transfer_hash'], transaction_type = 'transfer_receive', amount=validated_data['amount'])
@@ -64,7 +66,7 @@ class DepositSerializer(serializers.Serializer):
         return account_number
 
     def validate_amount(self, amount):
-        if not amount or float(amount) <=0:
+        if not amount or float(amount) <= 0:
             raise serializers.ValidationError({"Error": "Amount is not valid"})
         
         return amount
@@ -73,6 +75,7 @@ class DepositSerializer(serializers.Serializer):
         print(validated_data['account_number'])
         account = Account.objects.filter(account_number = validated_data['account_number']).first()
         account.balance += int(validated_data['amount'])
+        account.average_txn = (account.average_txn + int(validated_data['amount']))/2
         newTxn = Transaction(account = account, transaction_id = validated_data['deposit_hash'], transaction_type = 'deposit', amount=validated_data['amount'])
         account.save()
         newTxn.save()
@@ -89,7 +92,7 @@ class WithdrawSerializer(serializers.Serializer):
         return account_number
 
     def validate_amount(self, amount):
-        if not amount or float(amount) <=0:
+        if not amount or float(amount) <= 0:
             raise serializers.ValidationError({"Error": "Amount is not valid"})
         
         return amount
@@ -97,6 +100,7 @@ class WithdrawSerializer(serializers.Serializer):
     def withdraw(self, validated_data):
         account = Account.objects.filter(account_number = validated_data['account_number']).first()
         account.balance -= int(validated_data['amount'])
+        account.average_txn = (account.average_txn + int(validated_data['amount']))/2
         newTxn = Transaction(account = account, transaction_id = validated_data['withdraw_hash'], transaction_type = 'withdraw', amount=validated_data['amount'])
         account.save()
         newTxn.save()

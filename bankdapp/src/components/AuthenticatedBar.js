@@ -28,7 +28,7 @@ const AuthenticatedBar = () =>{
                             <Link to='/deposit' className="dropdown-item" href="#">Deposit</Link>
                             <Link to='/transfer' className="dropdown-item" href="#">Transfer</Link>
                             <Link to='/withdraw' className="dropdown-item" href="#">Withdraw</Link>
-                            <Link to='/loans-home' className="dropdown-item" href="#">Loans</Link>
+                            <Link to='/loans/home' className="dropdown-item" href="#">Loans</Link>
                             <a className="dropdown-item" href="#">My Account</a>
                             <a className="dropdown-item" role="button" onClick={logout}>Logout</a>
                         </div>

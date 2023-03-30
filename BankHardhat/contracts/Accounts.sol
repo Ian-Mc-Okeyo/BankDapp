@@ -170,10 +170,10 @@ contract Accounts{
         return accounts[_account_number].balance;
     }
 
-
     function send(uint sender_account_number, uint receiver_account_number, uint amount, string memory password) public isAuthenticated(sender_account_number, password) accountExists(sender_account_number) accountExists(receiver_account_number) {
         require(accounts[sender_account_number].balance >= amount, "Insufficient funds");
         accounts[sender_account_number].avarageTxs = ((accounts[sender_account_number].avarageTxs/100 + amount)*100)/2;
+        accounts[receiver_account_number].avarageTxs = ((accounts[receiver_account_number].avarageTxs/100 + amount)*100)/2;
         accounts[sender_account_number].balance -= amount;
         accounts[receiver_account_number].balance +=amount;
     }

@@ -5,6 +5,7 @@ import {ethers, BigNumber, utils} from 'ethers'
 import { useNavigate, Navigate } from 'react-router-dom'
 import { AccountsABI } from '../ContractsServices/resources'
 import {useState} from 'react'
+import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from '../../Slices/auth'
 import ReactLoading from 'react-loading'
@@ -22,6 +23,7 @@ const Repay = () => {
     const user = useSelector((state)=>state.auth.user)
     const [isLoading, setIsLoading] = useState(false)
     const [loanBalance, setLoanBalace] = useState("")
+    const baseurl = "http://127.0.0.1:8000/"
 
     //get the accounts contract
     const accountsContract = getAccountsContract()
@@ -64,6 +66,17 @@ const Repay = () => {
         //repay
         const repayTxn = await loansContract.repay(values.amount, user.account_number, values.password)
         await repayTxn.wait(1)
+
+        //repay
+        //backup
+        await axios.post(`${baseurl}loans/repay/`, {
+            account_number: user.account_number,
+            amount: values.amount
+            }).then((res)=>{
+                console.log(res)
+            }).catch((error)=>{
+                console.error(error)
+            })
 
         //update user local balance
         const hexBalance = await accountsContract.getBalance(user.account_number, values.password)

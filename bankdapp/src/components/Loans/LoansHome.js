@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import { CiMoneyCheck1 } from "react-icons/ci";
 import {FcMoneyTransfer} from 'react-icons/fc';
 import {BiMoneyWithdraw} from 'react-icons/bi';
+import axios from 'axios'
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { getLoansContract } from '../ContractsServices/services';
@@ -15,6 +16,7 @@ const LoansHome = () =>{
     const navigate = useNavigate()
     const user = useSelector((state)=>state.auth.user)
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
+    const baseurl = "http://127.0.0.1:8000/"
 
     const loansContract = getLoansContract()
 
@@ -23,6 +25,15 @@ const LoansHome = () =>{
         if(!loanExists){
             const loansCreationTxs = await loansContract.createLoanAccount(user.account_number)
             await loansCreationTxs.wait(1)
+
+            //backup
+            await axios.post(`${baseurl}loans/create-loan-account/`, {
+                account_number: user.account_number,
+                }).then((res)=>{
+                    console.log(res)
+                }).catch((error)=>{
+                    console.error(error)
+                })
             console.log("Created a loan account")
         }else{
             console.log("Loan account exists")
@@ -74,7 +85,7 @@ const LoansHome = () =>{
 
                 </div>
                 <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/loans-repay' class="card homeBox">
+                    <Link to='/loans/repay' class="card homeBox">
                         <div className="card-body">
                             <h2 className="card-title menu-icons"><GiPayMoney/></h2>
                             <p className="card-text">Repay</p>
@@ -82,7 +93,7 @@ const LoansHome = () =>{
                     </Link>
                 </div>
                 <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/loans-borrow' class="card homeBox">
+                    <Link to='/loans/borrow' class="card homeBox">
                         <div className="card-body">
                             <h2 className="card-title menu-icons"><GiReceiveMoney/></h2>
                             <p className="card-text">Borrow</p>

@@ -81,7 +81,7 @@ const AccountHome = () =>{
                     </Link>
                 </div>
                 <div className="col-sm-2" style={{marginTop: "5px"}}>
-                    <Link to='/loans-home' class="card homeBox">
+                    <Link to='/loans/home' class="card homeBox">
                         <div className="card-body">
                             <h2 className="card-title menu-icons"><GiReceiveMoney/></h2>
                             <p className="card-text">Loans</p>

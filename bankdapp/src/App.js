@@ -24,9 +24,9 @@ function App() {
         <Route exact path='/transfer' element={<Transfer/>}/>
         <Route exact path='/deposit' element={<Deposit/>}/>
         <Route exact path='/withdraw' element={<Withdraw/>}/>
-        <Route exact path='/loans-home' element={<LoansHome/>}/>
-        <Route exact path='/loans-borrow' element={<Borrow/>}/>
-        <Route exact path='/loans-repay' element={<Repay/>}/>
+        <Route exact path='/loans/home' element={<LoansHome/>}/>
+        <Route exact path='/loans/borrow' element={<Borrow/>}/>
+        <Route exact path='/loans/repay' element={<Repay/>}/>
       </Routes>
     </Router>
   );

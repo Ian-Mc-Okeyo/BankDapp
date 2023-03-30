@@ -1,5 +1,6 @@
 from django.db import models
+from Accounts.models import Account
 
 class Loan(models.Model):
-    account_number = models.CharField(max_length=200)
-    loans_balance = models.FloatField()
+    account = models.OneToOneField(Account, on_delete=models.CASCADE)
+    loan_balance = models.FloatField()

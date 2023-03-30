@@ -21,7 +21,7 @@ const Deposit = () => {
     const isAuthenticated = useSelector((state)=>state.auth.isAuthenticated)
     const user = useSelector((state)=>state.auth.user)
     const [isLoading, setIsLoading] = useState(false)
-    const baseurl = "http://127.0.0.1:8000/"
+    const baseurl = "http://127.0.0.1:8000"
 
     //get the contract
     const accountsContract = getAccountsContract()

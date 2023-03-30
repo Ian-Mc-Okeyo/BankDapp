@@ -18,6 +18,7 @@ contract Loans{
 
     function createLoanAccount(uint _id) public{
         require(accountsContract.checkIfAccountExists(_id)==true, "The account number does not exist");
+        require(existingLoanAccounts[_id]==false, "The loan account already exists");
         LoanAccount memory _newLoanAccount = LoanAccount(_id, 0);
         loanAccounts[_id] = _newLoanAccount;
         existingLoanAccounts[_id] = true;
