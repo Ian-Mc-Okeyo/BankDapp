@@ -34,6 +34,39 @@ export const AccountsABI = [
         "internalType": "string",
         "name": "_password",
         "type": "string"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_txn_hash",
+        "type": "bytes"
+      },
+      {
+        "internalType": "string",
+        "name": "_txn_type",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addTransaction",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_account_number",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_password",
+        "type": "string"
       }
     ],
     "name": "authenticateAccountNumber",
@@ -56,6 +89,30 @@ export const AccountsABI = [
       }
     ],
     "name": "checkIfAccountExists",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_account_number",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_txn_hash",
+        "type": "bytes"
+      }
+    ],
+    "name": "checkTransaction",
     "outputs": [
       {
         "internalType": "bool",

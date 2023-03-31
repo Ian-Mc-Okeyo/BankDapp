@@ -1,18 +1,16 @@
 from django.db.models.signals import pre_save
 from kafka import KafkaProducer
-from django.dispatch import receiver
-from Accounts.models import Account
+import json
 
-@receiver(pre_save, sender=Account)
-def send_to_kafka(sender, instance, **kwargs):
-    print("Consuming")
+def TransactionProducer(account_number, transaction_id, transaction_type, amount):
     producer = KafkaProducer(bootstrap_servers=['localhost:9092'])
-    topic = 'database_changes'
+    topic = 'bank_transactions'
     message = {
-        'model': sender.__name__,
-        'id': instance.id,
-        'action': 'created',
+        'account_number': account_number,
+        'transaction_id': transaction_id,
+        'transaction_type': transaction_type,
+        'amount':amount
     }
     
-    producer.send(topic, value=message)
+    producer.send(topic, value=json.dumps(message).encode('utf-8'))
     producer.flush()

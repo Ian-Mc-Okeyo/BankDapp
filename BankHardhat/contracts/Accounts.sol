@@ -16,10 +16,19 @@ contract Accounts{
         bytes32 public_key;
     }
 
+    struct Transaction {
+        bytes transaction_hash;
+        string transaction_type;
+        uint256 amount;
+    }
+
     uint count = 1000000;
 
-    //maping to store the accounts
+    //mapping to store the accounts
     mapping(uint => Account) accounts;
+
+
+    mapping(uint => Transaction[]) transactions;
 
     //mapping to check if an account number exists
     mapping(uint => bool) accounts_exist;
@@ -147,6 +156,20 @@ contract Accounts{
         email_exists[_email] = true;
         id_account[_IDNumber] = count;
         count = count +1;
+    }
+
+    function addTransaction(uint256 _account_number, string memory _password, bytes memory _txn_hash, string memory _txn_type, uint256 _amount) public isAuthenticated(_account_number, _password){
+        Transaction memory newTxn = Transaction(_txn_hash, _txn_type, _amount);
+        transactions[_account_number].push(newTxn);
+    }
+
+    function checkTransaction(uint256 _account_number, bytes memory _txn_hash) public view returns(bool){
+        for(uint k = transactions[_account_number].length -1; k>=0; k--){
+            if (keccak256(transactions[_account_number][k].transaction_hash) == keccak256(_txn_hash)){
+                return true;
+            }
+        }
+        return false;
     }
 
     function getBalance(uint256 _account_number, string memory password) public view isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){

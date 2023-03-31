@@ -32,6 +32,10 @@ const Withdraw = () => {
         const withdrawTxn = await accountsContract.withdraw(user.account_number, values.password, values.amount)
         await withdrawTxn.wait(1)
 
+        //record the transaction in the blockchain
+        const recordTxn = await accountsContract.addTransaction(user.account_number, values.password, withdrawTxn.hash, values.amount)
+        await recordTxn.waiT(1)
+
         //backup
         await axios.post(`${baseurl}/accounts/withdraw/`, {
             account_number: user.account_number,

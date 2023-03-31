@@ -1,4 +1,5 @@
 from django.db import models
+from Bank.producer import TransactionProducer
 
 class Account(models.Model):
     account_number = models.CharField(max_length=200, unique=True)
@@ -12,3 +13,6 @@ class Transaction(models.Model):
     transaction_type = models.CharField(max_length = 200)
     amount = models.CharField(max_length = 200)
 
+    def save(self, *args, **kwargs):
+        TransactionProducer(self.account.account_number, self.transaction_id, self.transaction_type, self.amount)
+        super(Transaction, self).save(*args, **kwargs)

@@ -32,6 +32,10 @@ const Deposit = () => {
         const depositTransaction = await accountsContract.deposit(user.account_number, values.password, values.amount)
         await depositTransaction.wait(1)
 
+        //record the transaction in the blockchain
+        const recordTxn = await accountsContract.addTransaction(user.account_number, values.password, depositTransaction.hash, 'deposit', values.amount)
+        await recordTxn.wait(1)
+
         //backup
         await axios.post(`${baseurl}/accounts/deposit/`, {
             account_number: user.account_number,

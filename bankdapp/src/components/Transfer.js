@@ -33,6 +33,10 @@ const Transfer = () => {
         const transferTxn = await accountsContract.send(user.account_number, values.receiver_account_number, values.amount, values.password)
         await transferTxn.wait(1)
 
+        //record the transaction in the blockchain
+        const recordTxn = await accountsContract.addTransaction(user.account_number, values.password, transferTxn.hash, values.amount)
+        await recordTxn.waiT(1)
+
         //backup
         await axios.post(`${baseurl}/accounts/transfer/`, {
             sender_account_number: user.account_number,
