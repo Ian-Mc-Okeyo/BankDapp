@@ -163,13 +163,16 @@ contract Accounts{
         transactions[_account_number].push(newTxn);
     }
 
-    function checkTransaction(uint256 _account_number, bytes memory _txn_hash) public view returns(bool){
-        for(uint k = transactions[_account_number].length -1; k>=0; k--){
+    function checkTransaction(uint256 _account_number, bytes memory _txn_hash) public view returns(uint){
+        uint tcount = 0;
+        for(uint k = transactions[_account_number].length-1; k >= 0; k--){
+            tcount++;
             if (keccak256(transactions[_account_number][k].transaction_hash) == keccak256(_txn_hash)){
-                return true;
+                return tcount;
             }
+           
         }
-        return false;
+        return tcount;
     }
 
     function getBalance(uint256 _account_number, string memory password) public view isAuthenticated(_account_number, password) accountExists(_account_number) returns(uint256){

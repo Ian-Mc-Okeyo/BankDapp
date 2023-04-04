@@ -9,7 +9,7 @@ export function getAccountsContract(){
     //connect to the smart contract
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
     const address = process.env.REACT_APP_ACCOUNTS_ADDRESS
-    const accounts = new ethers.Contract("0xc5a5C42992dECbae36851359345FE25997F5C42d", AccountsABI, provider)
+    const accounts = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", AccountsABI, provider)
 
     //signer
     const accountsSigner = provider.getSigner()
@@ -20,7 +20,7 @@ export function getAccountsContract(){
 export function getLoansContract(){
     const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:8545/")
     const address = process.env.REACT_APP_LOANS_ADDRESS;
-    const loans = new ethers.Contract("0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690", LoansABI, provider);
+    const loans = new ethers.Contract("0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9", LoansABI, provider);
 
     //signer
     const loansSigner = provider.getSigner()

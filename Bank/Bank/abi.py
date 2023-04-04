@@ -114,9 +114,9 @@ Accounts_abi = [
       "name": "checkTransaction",
       "outputs": [
         {
-          "internalType": "bool",
+          "internalType": "uint256",
           "name": "",
-          "type": "bool"
+          "type": "uint256"
         }
       ],
       "stateMutability": "view",

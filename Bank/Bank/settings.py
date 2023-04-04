@@ -160,3 +160,11 @@ CORS_ORIGIN_WHITELIST = [
     "http://127.0.0.1:3000",
     "http://localhost:3000",
 ]
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"  # new
+DEFAULT_FROM_EMAIL = "ianokeyo14559@gmail.com"
+EMAIL_HOST = "smtp.gmail.com"  # new
+EMAIL_HOST_USER = "ianokeyo14559@gmail.com"  # new
+EMAIL_HOST_PASSWORD = "ytlirkdetyaybmer"  # new
+EMAIL_PORT = 587  # new
+EMAIL_USE_TLS = True  # new

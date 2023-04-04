@@ -9,6 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Navigate } from 'react-router-dom';
 import AuthenticatedBar from './AuthenticatedBar';
 import Login from './Login';
+import { getAccountsContract } from './ContractsServices/services'
 
 const AccountHome = () =>{
     const navigate = useNavigate()
@@ -29,8 +30,8 @@ const AccountHome = () =>{
                 <b style={{color: "white"}}>Home</b>
             </h5>
 
-            <div class="col d-flex justify-content-center">
-                <div className="card w-75 homeBox p-1 p-md-2 m-md-3 mx-auto">
+            <div className="col d-flex justify-content-center">
+                <div className="card col-11 homeBox p-1 p-md-2 m-md-3 mx-auto">
                     <div className="card-body" style={{textAlign: 'left', color: 'white'}}>
                         <h5 className="card-title">Account Number</h5>
                         <br/>
@@ -38,7 +39,17 @@ const AccountHome = () =>{
                         <br/>
                         <br/>
                         <p>Welcome {user.first_name}</p>
-                        <p>#simple and transparent</p>
+                        <i>#simple and Transparent</i>
+                            
+                    </div>
+                </div>
+            </div>
+
+            <div className="col d-flex justify-content-center">
+                <div className="card col-11 p-md-2 m-md-3 balance-section">
+                    <div className="" style={{textAlign: 'left', color: 'white'}}>
+                        <h5 className="card-title">Your Money:</h5>
+                        <h5 className='display-5'>${user.balance}</h5>
                     </div>
                 </div>
             </div>
